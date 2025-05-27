@@ -1,0 +1,26 @@
+ components/bk_wifi/src/rw_ieee80211.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/components/bk_wifi/src/rw_ieee80211.c b/components/bk_wifi/src/rw_ieee80211.c
+index 3a969036..d5d122f9 100644
+--- a/components/bk_wifi/src/rw_ieee80211.c
++++ b/components/bk_wifi/src/rw_ieee80211.c
+@@ -31,11 +31,13 @@ typedef struct _wifi_cn_code_st_ {
+ 
+ WIFI_CN_ST g_country_code = {0};
+ 
+-#define COUNTRY_CODE_CN   {.cc= "CN", .schan=1, .nchan=13, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL};
+-#define COUNTRY_CODE_US   {.cc= "US", .schan=1, .nchan=11, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL};
+-#define COUNTRY_CODE_EP   {.cc= "EP", .schan=1, .nchan=13, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL};
+-#define COUNTRY_CODE_JP   {.cc= "JP", .schan=1, .nchan=14, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL};
+-#define COUNTRY_CODE_AU   {.cc= "AU", .schan=1, .nchan=13, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL};
++#define COUNTRY_CODE_CN   {.cc= "CN", .schan=1, .nchan=13, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL},
++#define COUNTRY_CODE_US   {.cc= "US", .schan=1, .nchan=11, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL},
++#define COUNTRY_CODE_EU   {.cc= "EU", .schan=1, .nchan=13, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL},
++#define COUNTRY_CODE_JP   {.cc= "JP", .schan=1, .nchan=13, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL},
++#define COUNTRY_CODE_AU   {.cc= "AU", .schan=1, .nchan=13, .max_tx_power=0, .policy=WIFI_COUNTRY_POLICY_MANUAL},
++
++const wifi_country_t wifi_country_list[]={COUNTRY_CODE_CN COUNTRY_CODE_US COUNTRY_CODE_EU COUNTRY_CODE_JP COUNTRY_CODE_AU};
+ 
+ static struct ieee80211_channel rw_2ghz_channels[] = {
+ 	CHAN2G(1, 2412, 0),

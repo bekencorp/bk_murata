@@ -1,0 +1,32 @@
+ components/bk_phy/src/bk_phy_adapter.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/components/bk_phy/src/bk_phy_adapter.c b/components/bk_phy/src/bk_phy_adapter.c
+index 217f08be..ef6d0f54 100755
+--- a/components/bk_phy/src/bk_phy_adapter.c
++++ b/components/bk_phy/src/bk_phy_adapter.c
+@@ -365,6 +365,7 @@ static uint32_t bk_misc_get_reset_reason_wrapper(void)
+ }
+ 
+ static void sys_ll_set_ana_reg10_iobyapssen_wrapper(uint32_t v) {
++#if 0
+ #if (CONFIG_SOC_BK7236XX) || (CONFIG_SOC_BK7239XX) || (CONFIG_SOC_BK7286XX)
+ #if (CONFIG_SOC_BK7236N) || (CONFIG_SOC_BK7239XX)
+ 	//TODO: fix me when bk7236n bring up
+@@ -379,6 +380,7 @@ static void sys_ll_set_ana_reg10_iobyapssen_wrapper(uint32_t v) {
+ 	sys_ll_set_ana_reg9_spi_latch1v(0);
+ #endif
+ #endif
++#endif
+ }
+ 
+ static void sys_ll_set_ana_reg8_violdosel_wrapper(uint32_t flag) {
+@@ -388,7 +390,7 @@ static void sys_ll_set_ana_reg8_violdosel_wrapper(uint32_t flag) {
+ #else
+ 	sys_ll_set_ana_reg9_spi_latch1v(1);
+ 	if (flag) {
+-		sys_ll_set_ana_reg8_violdosel(2);
++		sys_ll_set_ana_reg8_violdosel(4);
+ 	} else {
+ 		//shuguang20240718: use default current limit
+ 		sys_ll_set_ana_reg8_violdosel(4);

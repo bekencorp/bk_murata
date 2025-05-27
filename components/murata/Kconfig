@@ -1,0 +1,37 @@
+menu "Murata"
+    depends on SOC_BK7236
+    config MURATA_MODULE
+	    bool "Enable Murata Module"
+		default y
+
+	choice MODULE_TYPE
+		prompt "Module Type"
+		default MURATA_2KU if "$MODULE" = "type2ku"
+		default MURATA_2JS if "$MODULE" = "type2js"
+
+		config MURATA_2KU
+			bool "Murata Type2KU Module"
+			select OTP
+			select OTP_V1
+			select PHY_RFCALI_TO_OTP
+			select CONFIG_BASE_MAC_FROM_OTP1
+			select OTP_TEST
+			default y
+
+		config MURATA_2JS
+			bool "Murata Type2JS Module"
+			select OTP
+			select OTP_V1
+			select PHY_RFCALI_TO_OTP
+			select CONFIG_BASE_MAC_FROM_OTP1
+			select OTP_TEST
+			select PSRAM
+			select PSRAM_APS6408L_O
+			select PSRAM_AS_SYS_MEMORY
+			select PSRAM_HEAP_BASE
+			select PSRAM_HEAP_SIZE
+			select PSRAM_WRITE_THROUGH
+			select PSRAM_CALIBRATE
+
+	endchoice
+endmenu

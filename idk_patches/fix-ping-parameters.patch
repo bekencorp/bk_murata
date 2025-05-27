@@ -1,0 +1,22 @@
+ components/bk_cli/cli_netif.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/components/bk_cli/cli_netif.c b/components/bk_cli/cli_netif.c
+index d6113cd5..00b55791 100644
+--- a/components/bk_cli/cli_netif.c
++++ b/components/bk_cli/cli_netif.c
+@@ -196,8 +196,13 @@ void cli_ping_cmd(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **arg
+ 		os_memcpy(pcWriteBuffer, msg, os_strlen(msg));
+ 		return;
+ 	}
+-	if (argc > 2)
++	if (argc > 2){
+ 		cnt = os_strtoul(argv[2], NULL, 10);
++		if(cnt <= 0){
++			os_printf("The ping count should be greater than 0!\n");
++			goto error;
++		}
++	}
+ 
+ 	os_printf("ping IP address:%s\n", argv[1]);
+ 	ping_start(argv[1], cnt, 0);

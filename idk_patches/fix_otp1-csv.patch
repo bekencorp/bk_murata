@@ -1,0 +1,16 @@
+ middleware/boards/bk7236/csv/otp1.csv | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/middleware/boards/bk7236/csv/otp1.csv b/middleware/boards/bk7236/csv/otp1.csv
+index dcad8864..488ceca7 100644
+--- a/middleware/boards/bk7236/csv/otp1.csv
++++ b/middleware/boards/bk7236/csv/otp1.csv
+@@ -21,7 +21,7 @@ id,     name,                           size,       offset,     end,        priv
+ 19,     OTP_IMPLEMENTATION_ID,          32,         0x2CC,      0x2EC,      OTP_READ_WRITE,         TRUE,
+ 20,     OTP_HW_VERSION,                 32,         0x2EC,      0x30C,      OTP_READ_WRITE,         TRUE,
+ 21,     OTP_VERIFICATION_SERVICE_URL,   32,         0x30C,      0x32C,      OTP_READ_WRITE,         FALSE,
+-23,     OTP_PROFILE_DEFINITION,         32,         0x32C,      0x34C,      OTP_READ_WRITE,         FALSE,
++22,     OTP_PROFILE_DEFINITION,         32,         0x32C,      0x34C,      OTP_READ_WRITE,         FALSE,
+ 23,     OTP_ENTROPY_SEED,               64,         0x34C,      0x38C,      OTP_READ_WRITE,         FALSE,
+ 24,     OTP_SECURE_DEBUG_PK,            2,          0x38C,      0x38E,      OTP_READ_WRITE,         FALSE,
+ 25,     OTP_MAC_ADDRESS,                8,          0x3AC,      0x3B4,      OTP_READ_WRITE,         FALSE,

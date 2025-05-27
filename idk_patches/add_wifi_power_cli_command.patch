@@ -1,0 +1,242 @@
+ components/bk_cli/cli_wifi.c | 169 ++++++++++++++++++++++++++++++--
+ 1 file changed, 162 insertions(+), 7 deletions(-)
+
+diff --git a/components/bk_cli/cli_wifi.c b/components/bk_cli/cli_wifi.c
+index 486f0277..7a0f0f09 100644
+--- a/components/bk_cli/cli_wifi.c
++++ b/components/bk_cli/cli_wifi.c
+@@ -13,6 +13,7 @@
+ #include <components/netif.h>
+ #include "bk_wifi.h"
+ #include "bk_wifi_types.h"
++#include "bk_rw.h"
+ #if CONFIG_WIFI_CLI_RAW_LINK_ENABLE
+ #include <modules/raw_link.h>
+ #endif
+@@ -32,6 +33,9 @@
+ #include "bk_wifi_private.h"
+ #include "boot.h"
+ #endif
++#include "stdlib.h"
++#include "string.h"
++#include "../include/modules/wifi.h"
+ 
+ #define TAG "wifi_cli"
+ #define CMD_WLAN_MAX_BSS_CNT	50
+@@ -1040,6 +1044,76 @@ exit:
+ 	return;
+ }
+ 
++void wifi_countrycode_command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
++{
++	int ret;
++	char *msg = NULL;
++    char * p_countrycode = NULL;
++    wifi_country_t wifi_country;
++    if(argc == 1)
++    {
++        ret = bk_wifi_get_country(&wifi_country);
++        if(!ret)
++        {
++			CLI_LOGI("wifi_country: %s\r\n", wifi_country.cc);
++			msg = WIFI_CMD_RSP_SUCCEED;
++        }
++        else
++        {
++            CLI_LOGI("Get wifi_country Failed %d\r\n", ret);
++			msg = WIFI_CMD_RSP_ERROR;
++        }
++    }
++    else if(argc == 2)
++    {
++        memset(&wifi_country,0 ,sizeof(wifi_country_t));
++        p_countrycode = argv[1];
++        if(strlen(p_countrycode) != 2)
++        {
++            CLI_LOGI("length error %d\r\n", strlen(p_countrycode));
++			msg = WIFI_CMD_RSP_ERROR;
++        }
++        else
++        {
++            for(int i=0;i<5;i++)
++            {
++                if((p_countrycode[0]==wifi_country_list[i].cc[0]) && (p_countrycode[1]==wifi_country_list[i].cc[1]))
++                {
++                    memcpy(&wifi_country,&wifi_country_list[i],sizeof(wifi_country_t));
++                    break;
++                }
++            }
++            if(wifi_country.cc[0] == 0x00)
++            {
++                CLI_LOGI("Not supported country code %s\r\n", p_countrycode);
++				msg = WIFI_CMD_RSP_ERROR;
++            }
++            else
++            {
++                ret = bk_wifi_set_country(&wifi_country);
++                if(!ret)
++                {
++                    CLI_LOGI("Set wifi_country: %s\r\n", wifi_country.cc);
++					msg = WIFI_CMD_RSP_SUCCEED;
++                }
++                else
++                {
++                    CLI_LOGI("Set wifi_country Failed %d\r\n", ret);
++					msg = WIFI_CMD_RSP_ERROR;
++                }
++            }
++        }
++    }
++    else
++    {
++        CLI_LOGI("invalid cmd\r\n");
++		msg = WIFI_CMD_RSP_ERROR;
++    }
++	os_memcpy(pcWriteBuffer, msg, os_strlen(msg));
++    return ;
++
++}
++
+ #if CONFIG_AP_STATYPE_LIMIT
+ void cli_wifi_sta_vsie_cmd(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
+ {
+@@ -1631,7 +1705,7 @@ int cli_netif_event_cb(void *arg, event_module_t event_module,
+ 			rtos_set_semaphore(&wifi_cmd_sema);
+ 		}
+ 		got_ip = (netif_event_got_ip4_t *)event_data;
+-		CLI_LOGW("%s got ip\n", got_ip->netif_if == NETIF_IF_STA ? "BK STA" : "unknown netif");
++		CLI_LOGI("%s got ip\n", got_ip->netif_if == NETIF_IF_STA ? "Type2KU STA" : "unknown netif");
+ 		break;
+ 	default:
+ 		CLI_LOGW("rx event <%d %d>\n", event_module, event_id);
+@@ -1653,23 +1727,23 @@ int cli_wifi_event_cb(void *arg, event_module_t event_module,
+ 	switch (event_id) {
+ 	case EVENT_WIFI_STA_CONNECTED:
+ 		sta_connected = (wifi_event_sta_connected_t *)event_data;
+-		CLI_LOGW("BK STA connected %s\n", sta_connected->ssid);
++		CLI_LOGI("Type2KU STA connected %s\n", sta_connected->ssid);
+ 		break;
+ 
+ 	case EVENT_WIFI_STA_DISCONNECTED:
+ 		sta_disconnected = (wifi_event_sta_disconnected_t *)event_data;
+-		CLI_LOGW("BK STA disconnected, reason(%d)%s\n", sta_disconnected->disconnect_reason,
++		CLI_LOGI("Type2KU STA disconnected, reason(%d)%s\n", sta_disconnected->disconnect_reason,
+ 			sta_disconnected->local_generated ? ", local_generated" : "");
+ 		break;
+ 
+ 	case EVENT_WIFI_AP_CONNECTED:
+ 		ap_connected = (wifi_event_ap_connected_t *)event_data;
+-		CLI_LOGW(BK_MAC_FORMAT" connected to BK AP\n", BK_MAC_STR(ap_connected->mac));
++		CLI_LOGI(BK_MAC_FORMAT" connected to Type2KU AP\n", BK_MAC_STR(ap_connected->mac));
+ 		break;
+ 
+ 	case EVENT_WIFI_AP_DISCONNECTED:
+ 		ap_disconnected = (wifi_event_ap_disconnected_t *)event_data;
+-		CLI_LOGW(BK_MAC_FORMAT" disconnected from BK AP\n", BK_MAC_STR(ap_disconnected->mac));
++		CLI_LOGI(BK_MAC_FORMAT" disconnected from Type2KU AP\n", BK_MAC_STR(ap_disconnected->mac));
+ 		break;
+ 
+ 	case EVENT_WIFI_NETWORK_FOUND:
+@@ -2327,12 +2401,92 @@ usage:
+ }
+ #endif
+ 
++static void tx_power_wifi_command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
++{
++    float wifi_pwr;
++    double wifi_power;
++    int standard;
++    if(argc == 2)
++    {
++        if(strlen(argv[1]) != 1)
++        {
++            os_printf("cmd parameter error\r\n");
++            return;
++        }
++        standard = *argv[1]-'0';
++        if(standard == WIFI_STANDARD_11B)
++        {
++            bk_wifi_get_tx_power(WIFI_STANDARD_11B, &wifi_pwr);
++            os_printf("Tx_pwr_wifi: %f\r\n", wifi_pwr);
++        }
++        else if(standard == WIFI_STANDARD_11G)
++        {
++            bk_wifi_get_tx_power(WIFI_STANDARD_11G, &wifi_pwr);
++            os_printf("Tx_pwr_wifi: %f\r\n", wifi_pwr);
++        }
++        else if(standard == WIFI_STANDARD_11N)
++        {
++            bk_wifi_get_tx_power(WIFI_STANDARD_11N, &wifi_pwr);
++            os_printf("Tx_pwr_wifi: %f\r\n", wifi_pwr);
++        }
++		else if(standard == WIFI_STANDARD_11AX)
++        {
++            bk_wifi_get_tx_power(WIFI_STANDARD_11AX, &wifi_pwr);
++            os_printf("Tx_pwr_wifi: %f\r\n", wifi_pwr);
++        }
++        else
++        {
++            os_printf("invalid cmd\r\n");
++        }
++    }
++    else if(argc == 3)
++    {
++        if(strlen(argv[1]) != 1)
++        {
++            os_printf("cmd parameter error\r\n");
++            return;
++        }
++        standard = *argv[1]-'0';
++        wifi_power = strtod(argv[2], NULL);
++        wifi_pwr = (float)wifi_power;
++        if(standard == WIFI_STANDARD_11B)
++        {
++        bk_wifi_set_tx_power(WIFI_STANDARD_11B, wifi_pwr);
++        os_printf("Set Tx_pwr_wifi: %f\r\n", wifi_pwr);
++        }
++        else if(standard == WIFI_STANDARD_11G)
++        {
++        bk_wifi_set_tx_power(WIFI_STANDARD_11G, wifi_pwr);
++        os_printf("Set Tx_pwr_wifi: %f\r\n", wifi_pwr);
++        }
++        else if(standard == WIFI_STANDARD_11N)
++        {
++        bk_wifi_set_tx_power(WIFI_STANDARD_11N, wifi_pwr);
++        os_printf("Set Tx_pwr_wifi: %f\r\n", wifi_pwr);
++        }
++		else if(standard == WIFI_STANDARD_11AX)
++        {
++        bk_wifi_set_tx_power(WIFI_STANDARD_11AX, wifi_pwr);
++        os_printf("Set Tx_pwr_wifi: %f\r\n", wifi_pwr);
++        }
++        else
++        {
++        os_printf("invalid cmd\r\n");
++        }
++    }
++    else
++    {
++      os_printf("invalid cmd\r\n");
++    }
++}
++
+ #define WIFI_CMD_CNT (sizeof(s_wifi_commands) / sizeof(struct cli_command))
+ static const struct cli_command s_wifi_commands[] = {
+ 	{"scan", "scan [ssid]", cli_wifi_scan_cmd},
+-	{"ap", "ap ssid [password] [channel[1:14]]", cli_wifi_ap_cmd},
+-	{"start_hidden_softap", "start_hidden_softap ssid [password] [channel[1:14]]", cli_wifi_hidden_ap_cmd},
++	{"ap", "ap ssid [password] [channel[1:13]]", cli_wifi_ap_cmd},
++	{"start_hidden_softap", "start_hidden_softap ssid [password] [channel[1:13]]", cli_wifi_hidden_ap_cmd},
+ 	{"sta", "sta ssid [password][bssid][channel]", cli_wifi_sta_cmd}, //TODO support connect speicific BSSID
++	{"wifi_countrycode", "wifi_countrycode [country_code]", wifi_countrycode_command},
+ #if CONFIG_COMPONENTS_WPA2_ENTERPRISE
+ 	{"sta_eap", "sta_eap ssid password [identity] [client_cert] [private_key]", cli_wifi_sta_eap_cmd},
+ #endif
+@@ -2390,6 +2544,7 @@ static const struct cli_command s_wifi_commands[] = {
+ #if CONFIG_BRIDGE
+ 	{"bridge", "bridge open|close", cli_wifi_open_bridge_cmd},
+ #endif
++    {"tx_pwr_wifi", "Get/Set tx pwr wifi. <tx_pwr_wifi>: 10.5", tx_power_wifi_command},
+ };
+ 
+ int cli_wifi_init(void)

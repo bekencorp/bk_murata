@@ -1,0 +1,1 @@
+components/tools/armino_env_setup.sh

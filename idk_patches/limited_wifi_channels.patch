@@ -1,0 +1,23 @@
+ components/bk_wifi/src/wifi_v2.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/components/bk_wifi/src/wifi_v2.c b/components/bk_wifi/src/wifi_v2.c
+index fa0de1db..3fd6b820 100644
+--- a/components/bk_wifi/src/wifi_v2.c
++++ b/components/bk_wifi/src/wifi_v2.c
+@@ -3136,12 +3136,14 @@ static bk_err_t wifi_ap_set_config(const wifi_ap_config_t *ap_config)
+ {
+ 	BK_ASSERT(g_ap_param_ptr); /* ASSERT VERIFIED */
+ 	BK_ASSERT(g_wlan_general_param); /* ASSERT VERIFIED */
++	wifi_country_t wifi_country;
++	bk_wifi_get_country(&wifi_country);
+ 
+ 	if (is_zero_ether_addr((u8 *)&g_ap_param_ptr->bssid))
+ 		bk_wifi_ap_get_mac((uint8_t *)(&g_ap_param_ptr->bssid));
+ 
+ 	//TODO
+-	if ((ap_config->channel >= 1 && ap_config->channel <=14)
++	if ((ap_config->channel >= wifi_country.schan && ap_config->channel <=wifi_country.nchan)
+ #if CONFIG_SOC_BK7239XX || CONFIG_SOC_BK7286XX
+ 		|| (ap_config->channel >= 36 && ap_config->channel <=165)
+ #endif

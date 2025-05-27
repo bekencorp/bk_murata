@@ -1,0 +1,74 @@
+ components/bk_cli/cli_phy.c | 47 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+
+diff --git a/components/bk_cli/cli_phy.c b/components/bk_cli/cli_phy.c
+index 0a5dee7f..2ed4b360 100644
+--- a/components/bk_cli/cli_phy.c
++++ b/components/bk_cli/cli_phy.c
+@@ -1,5 +1,7 @@
+ #include "cli.h"
+ #include "bk_phy.h"
++#include "sys_ll.h"
++#include "stdlib.h"
+ 
+ #if CONFIG_POWER_TABLE
+ extern void pwr_tbl_command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv);
+@@ -31,6 +33,50 @@ static void phy_cca_test(char *pcWriteBuffer, int xWriteBufferLen, int argc, cha
+ 	}
+ }
+ 
++static void cli_phy_vio_voltage_level_set_cmd(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
++{
++	uint32_t ldo_mode;
++    uint32_t vol_level;
++    if(argc == 2)
++	{
++	   ldo_mode = strtol(argv[1], NULL, 10);
++	   if(ldo_mode == 0 || ldo_mode == 1)
++	   {
++			sys_ll_set_ana_reg9_spi_latch1v(1);
++			sys_ll_set_ana_reg10_iobyapssen(ldo_mode);
++			sys_ll_set_ana_reg9_spi_latch1v(0);
++			os_printf("LDO_mode set success\r\n");
++	   }
++	   else
++	   {
++		    os_printf("please set ldo_mode to 0 or 1\r\n");
++	   }
++	}
++	else if(argc == 3)
++	{
++	   ldo_mode = strtol(argv[1], NULL, 10);
++	   vol_level = strtol(argv[2], NULL, 10);
++	     if(vol_level >=0 && vol_level <=7)
++		 {
++		    sys_ll_set_ana_reg9_spi_latch1v(1);
++            sys_ll_set_ana_reg10_iobyapssen(ldo_mode);
++	        sys_ll_set_ana_reg9_spi_latch1v(0);
++			sys_ll_set_ana_reg9_spi_latch1v(1);
++			sys_ll_set_ana_reg8_violdosel(vol_level);
++			sys_ll_set_ana_reg9_spi_latch1v(0);
++			os_printf("Set VIO_voltage_level: %u\r\n", vol_level);
++		 }
++	     else
++		 {
++            os_printf("Voltage_level is [0~7].\r\n");
++	     }
++	}
++	else
++	{
++	   os_printf("usage: vio_vol [ldo_mode] [vio_level].\r\n");
++	}
++}
++
+ #if (CONFIG_SOC_BK7256XX)
+ //extern void cmd_saradc_auto_test(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv);
+ //extern void cmd_sigtest(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv);
+@@ -49,6 +95,7 @@ static const struct cli_command s_phy_commands[] = {
+ 
+ 	{"txevm", "txevm [-m] [-c] [-l] [-r] [-w]", tx_evm_cmd_test},
+ 	{"rxsens", "rxsens [-m] [-d] [-c] [-l]", rx_sens_cmd_test},
++	{"vio_vol", "vio_vol [0/1] [0~7]", cli_phy_vio_voltage_level_set_cmd},
+ 
+ 
+ #if ((!CONFIG_SOC_BK7231) && (!CONFIG_SOC_BK7271))

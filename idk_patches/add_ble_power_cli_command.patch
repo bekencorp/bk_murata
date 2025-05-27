@@ -1,0 +1,49 @@
+ components/bk_cli/cli_ble.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/components/bk_cli/cli_ble.c b/components/bk_cli/cli_ble.c
+index a9af204e..49ea47aa 100644
+--- a/components/bk_cli/cli_ble.c
++++ b/components/bk_cli/cli_ble.c
+@@ -1,14 +1,41 @@
+ #include "bk_cli.h"
+ #include <common/sys_config.h>
+ #include "bk_phy.h"
++#include "stdlib.h"
++#include "string.h"
++#include "../include/components/bluetooth/bk_ble.h"
+ 
+ extern void ble_command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv);//TODO
++extern bk_err_t bk_ble_get_tx_power(float *powerdBm);
+ 
+ #define BLE_CMD_CNT (sizeof(s_ble_commands) / sizeof(struct cli_command))
+ 
++static void tx_power_ble_command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
++{
++    float ble_pwr;
++    double ble_power;
++    if(argc == 1)
++    {
++      bk_ble_get_tx_power(&ble_pwr);
++      os_printf("Tx_pwr_ble: %f\r\n", ble_pwr);
++    }
++    else if(argc == 2)
++    {
++      ble_power = strtod(argv[1], NULL);
++      ble_pwr = (float)ble_power;
++      bk_ble_tx_power_set(ble_pwr);
++      os_printf("Set Tx_pwr_ble: %f\r\n", ble_pwr);
++    }
++    else
++    {
++      os_printf("invalid cmd\r\n");
++    }
++}
++
+ static const struct cli_command s_ble_commands[] = {
+ #if CONFIG_BLUETOOTH
+ 	{"ble", "ble arg1 arg2",  ble_command},
++	{"tx_pwr_ble", "Get/Set tx pwr ble. <tx_pwr_ble>: 10.5", tx_power_ble_command},
+ #endif
+ 
+ #if (!CONFIG_WIFI_ENABLE)

@@ -1,0 +1,20 @@
+ middleware/boards/bk7236/vnd_cal/vnd_cal.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/middleware/boards/bk7236/vnd_cal/vnd_cal.c b/middleware/boards/bk7236/vnd_cal/vnd_cal.c
+index 42b316e9..3e3322dd 100644
+--- a/middleware/boards/bk7236/vnd_cal/vnd_cal.c
++++ b/middleware/boards/bk7236/vnd_cal/vnd_cal.c
+@@ -430,9 +430,9 @@ const INT16 shift_tab_n[1] = {0}; // for MCS7
+ #else
+ const INT16 shift_tab_b[4] = {0, 0, 0, 0}; // 11M base,5.5M,2M,1M
+ // 54M base -                 54M,48M,36M,24M,18M,12M,9M,6M
+-const INT16 shift_tab_g[8] = {0,  2,  2,  2,  3,  3,  4, 4/*4*/}; // 54M base -  12M,9M,6M//do
+-const INT16 shift_tab_n20[10] = {-10,  -6,  0,  2,  2,  2,  3,  3,  4, 4/*4*/}; // n20 mcs9 mcs8 mcs7(base) -  mcs0,
+-const INT16 shift_tab_n40[10] = {-10,  -6,  0,  0,  0,  0,  0,  0,  0, 0/*4*/}; // n40 mcs9 mcs8 mcs7(base) -  mcs0,
++const INT16 shift_tab_g[8] = {0,  2,  4,  6,  8,  10,  12, 12/*4*/}; // 54M base -  12M,9M,6M//do
++const INT16 shift_tab_n20[10] = {-10,  -6,  0,  2,  4,  6,  8,  10,  12, 12/*4*/}; // n20 mcs9 mcs8 mcs7(base) -  mcs0,
++const INT16 shift_tab_n40[10] = {-10,  -6,  0,  2,  4,  6,  8,  10,  12, 12/*4*/}; // n40 mcs9 mcs8 mcs7(base) -  mcs0,
+ #endif
+ 
+ const INT16 shift_tab_b_fcc[WLAN_2_4_G_CHANNEL_NUM] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // ch1~ch14

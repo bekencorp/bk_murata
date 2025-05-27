@@ -1,0 +1,1 @@
+components/tools/idk_install_patches.sh

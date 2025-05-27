@@ -1,0 +1,23 @@
+#include "bk_private/bk_init.h"
+#include <components/system.h>
+#include <os/os.h>
+#include <components/shell_task.h>
+
+extern void user_app_main(void);
+extern void rtos_set_user_app_entry(beken_thread_function_t entry);
+extern int bk_cli_init(void);
+extern void bk_set_jtag_mode(uint32_t cpu_id, uint32_t group_id);
+
+void user_app_main(void){
+
+}
+
+int main(void)
+{
+#if (CONFIG_SYS_CPU0)
+	rtos_set_user_app_entry((beken_thread_function_t)user_app_main);
+#endif
+	bk_init();
+
+	return 0;
+}

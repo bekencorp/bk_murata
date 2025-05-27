@@ -1,0 +1,15 @@
+ components/bk_wifi/include/bk_private/bk_rw.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/components/bk_wifi/include/bk_private/bk_rw.h b/components/bk_wifi/include/bk_private/bk_rw.h
+index 4b67fb65..1dbf0e1f 100755
+--- a/components/bk_wifi/include/bk_private/bk_rw.h
++++ b/components/bk_wifi/include/bk_private/bk_rw.h
+@@ -416,6 +416,7 @@ extern void ap_vif_probe_req_frame_cb_register(apvif_probereq_frame_t cb);
+ 
+ int rw_ieee80211_set_country(const wifi_country_t *country);
+ int rw_ieee80211_get_country(wifi_country_t *country);
++extern const wifi_country_t wifi_country_list[];
+ 
+ FUNC_1PARAM_PTR bk_wifi_get_ap_power_cb(void);
+ #ifdef __cplusplus
