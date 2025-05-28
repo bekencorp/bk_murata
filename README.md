@@ -1,7 +1,7 @@
 
 ## Introduction
 
-The Murata Type2KU Module is a Wi-Fi/BLE combo module (supporting Wi-Fi 6) based on Beken’s BK7236 IC. This SDK, built upon the original BK7236 IDK with additional Murata Type2KU patches, aims to provide an easy-to-use development environment for customers. The SDK folder structure is as follows:
+The Murata [Type2KU Module](https://www.murata.com/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2ku) is a Wi-Fi/BLE combo module (supporting Wi-Fi 6) based on Beken’s BK7236 IC. This SDK, built upon the original BK7236 IDK with additional Murata Type2KU patches, aims to provide an easy-to-use development environment for customers. The SDK folder structure is as follows:
 
 ```
 ├── bk_idk
@@ -14,12 +14,10 @@ The Murata Type2KU Module is a Wi-Fi/BLE combo module (supporting Wi-Fi 6) based
 │   └── murata
 │       ├── CMakeLists.txt
 │       ├── Kconfig
-│       ├── lib2js.a
 │       ├── lib2ku.a
 ├── Makefile -> components/tools/Makefile
 ├── module
 │   └── bk7236
-│       ├── type2js.defconfig
 │       └── type2ku.defconfig
 │       └── otp2.csv
 ├── idk_patches
